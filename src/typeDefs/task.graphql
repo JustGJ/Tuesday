@@ -1,0 +1,23 @@
+# type Query {
+#   allTasksFromProject(projectId: Int): [Task!]!
+#   allTasksFromUser(userId: Int): [Task!]!
+# }
+type Mutation {
+  createTask(name: String!, description: String, status: String, projectId: Int!): Task!
+}
+type Task {
+  id: Int
+  name: String!
+  description: String
+  status: String
+  projectId: Int
+  project: Project
+  users: [User_has_tasks]
+  comments: [Comment]
+}
+type Comment {
+  id: Int
+  content: String
+  task: Task
+  user: User
+}

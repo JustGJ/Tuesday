@@ -89,7 +89,11 @@ model Comment {
   taskId  Int
 }
 
-// Demander pour faire un tableau (genre pour "status")
-// Demander pour la date (typedef)
-// Confirmation pour le JSON webtoken (https://website.simplx.fr/blog/2016/09/27/authentification-api-via-jwt-et-cookies/) (c'est aussi simple?)
-// typegraphql
+// Faire la table statut
+// Faire les seeds
+// faire le middleware avec bcrypt pour le mdp
+// faire service spécifiques pour authentification / inscription
+// Faire les chemin avec typescript
+// Organiser tout ce merdier
+// faire le middleware/service pour le token
+// faire le middleware pour le mail
