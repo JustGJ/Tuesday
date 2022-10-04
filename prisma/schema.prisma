@@ -11,6 +11,85 @@ datasource db {
 }
 
 model Business {
-    id        Int      @id @default(autoincrement())
-    name   String
+  id       Int                  @id @default(autoincrement())
+  name     String               @unique
+  users    Business_has_users[]
+  projects Project[]
 }
+
+model User {
+  id         Int                  @id @default(autoincrement())
+  name       String
+  lastname   String
+  email      String               @unique
+  password   String
+  projects   Project_has_users[]
+  businesses Business_has_users[]
+  tasks      User_has_tasks[]
+  comments   Comment[]
+}
+
+model Project {
+  id         Int                 @id @default(autoincrement())
+  name       String
+  business   Business            @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  businessId Int
+  users      Project_has_users[]
+  tasks      Task[]
+}
+
+model Business_has_users {
+  isAdmin    Boolean
+  user       User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId     Int
+  business   Business @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  businessId Int
+
+  @@id([userId, businessId])
+}
+
+model Project_has_users {
+  user      User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId    Int
+  project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  projectId Int
+  isLeader  Boolean
+
+  @@id([userId, projectId])
+}
+
+model Task {
+  id          Int              @id @default(autoincrement())
+  name        String
+  status      String           @default("En cours")
+  description String
+  projectId   Int
+  project     Project          @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  users       User_has_tasks[]
+  comments    Comment[]
+}
+
+model User_has_tasks {
+  user           User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId         Int
+  task           Task @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  taskId         Int
+  percentageDone Int  @default(0)
+  workedTime     Int  @default(0)
+
+  @@id([userId, taskId])
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+  user    User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId  Int
+  task    Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  taskId  Int
+}
+
+// Demander pour faire un tableau (genre pour "status")
+// Demander pour la date (typedef)
+// Confirmation pour le JSON webtoken (https://website.simplx.fr/blog/2016/09/27/authentification-api-via-jwt-et-cookies/) (c'est aussi simple?)
+// typegraphql
