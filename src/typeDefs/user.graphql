@@ -1,0 +1,29 @@
+type Query {
+  allUsers: [User!]!
+  getSingleUser(id: Int!): User
+  allBusinessHasUsers: [Business_has_users!]!
+  getUserBusinesses(userId: Int!): [Business_has_users!]!
+}
+type Mutation {
+  createUser(name: String!, lastname: String!, email: String!, password: String!): User!
+  createBusinessHasUsers(userId: Int!, businessId: Int!, isAdmin: Boolean!): Business_has_users!
+}
+type User {
+  name: String
+  lastname: String
+  email: String
+  password: String
+  id: Int
+  businesses: [Business_has_users]
+  projects: [Project_has_users]
+  tasks: [User_has_tasks]
+  comments: [Comment]
+}
+type User_has_tasks {
+  userId: Int
+  taskId: Int
+  user: User
+  task: Task
+  percentageDone: Int
+  workedTime: Int
+}

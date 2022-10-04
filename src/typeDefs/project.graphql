@@ -1,0 +1,21 @@
+type Query {
+  getProject(id: Int!): Project
+}
+type Mutation {
+  createProject(name: String!, businessId: Int!): Project!
+}
+type Project {
+  name: String
+  business: Business
+  tasks: [Task]
+  id: Int
+  users: [Project_has_users]
+}
+
+type Project_has_users {
+  userId: Int
+  projectId: Int
+  isLeader: Boolean
+  user: User
+  project: Project
+}

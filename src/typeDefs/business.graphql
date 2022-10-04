@@ -1,0 +1,25 @@
+type Query {
+  allBusiness: [Business!]!
+  getSingleBusiness(id: Int!): Business
+  allBusinessHasUsers: [Business_has_users!]!
+  getUserBusinesses(userId: Int!): [Business_has_users!]!
+}
+
+type Mutation {
+  createBusiness(name: String!): Business!
+  createBusinessHasUsers(userId: Int!, businessId: Int!, isAdmin: Boolean!): Business_has_users!
+}
+
+type Business {
+  name: String
+  id: Int
+  users: [Business_has_users]
+  projects: [Project]
+}
+type Business_has_users {
+  userId: Int
+  businessId: Int
+  isAdmin: Boolean
+  user: User
+  business: Business
+}
