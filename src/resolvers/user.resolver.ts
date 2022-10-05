@@ -2,6 +2,7 @@ import { prisma } from '../prismaclient'
 import '../../prisma/middleware/user.middleware'
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
+import { schemaUser } from '../validationSchema/validation';
 
 const isAuthorized = (password: string, hash: string, email:string) => {
 
@@ -89,7 +90,27 @@ export const resolvers = {
         throw new Error('This mail is already used');
       }
 
-      const newUser = await prisma.user.create({
+      const isValid = await schemaUser.isValid({
+        email: args.email,
+        password: args.password,
+        name: args.name,
+        lastname: args.lastname,
+      }).catch((e) => console.log(JSON.stringify(e)))
+
+      try { 
+        await schemaUser.validate({
+          email: args.email,
+          password: args.password,
+          name: args.name,
+          lastname: args.lastname,
+        })
+      } catch(e : any) {
+        throw new Error(JSON.stringify(e.errors))
+      }
+      let newUser; 
+
+      if(isValid) {
+      newUser = await prisma.user.create({
         data: {
           name: args.name,
           lastname: args.lastname,
@@ -97,21 +118,34 @@ export const resolvers = {
           password: args.password,
         },
       });
-
+      } else {
+      throw new Error('Invalid data');
+      }
       return newUser
+      
     },
-    changePassword: async (_: any, args: any) => {
+    changePassword: async (_: any, args: any, context: any) => {
       const user = await prisma.user.findUnique({
         where: {
-          email: args.email,
+          email: context.user.email,
         },
       });
       if (!user) {
         throw new Error('No user with that email');
       }
+
+      const isValid = await schemaUser.isValid({
+        email: context.user.email,
+        password: context.user.password,
+        name: context.user.name,
+        lastname: context.user.lastname,
+      })
+
       const hash = user?.password || ''
+
       const result: any  = await isAuthorized(args.password, hash, args.email)
-      if(result.success) {
+
+      if(result.success && isValid) {
         await prisma.user.update({
           where: {
             email: args.email,
