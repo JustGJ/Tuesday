@@ -1,40 +1,38 @@
+import { prisma } from '../prismaclient';
+import '../../prisma/middleware/user.middleware';
+import bcrypt from 'bcrypt';
 
-import { prisma } from '../prismaclient'
-import '../../prisma/middleware/user.middleware'
-import bcrypt from "bcrypt";
-
-const comparePassword = (password: string, hash: string, email:string) => {
-
+const comparePassword = (password: string, hash: string, email: string) => {
   return new Promise((resolve, reject) => {
     let res = {
       email: email,
-      success: false
-    }
-    bcrypt.compare(password, hash, function(err, result) {
-      if(result) {
-        res.success = true
-        resolve(res)
+      success: false,
+    };
+    bcrypt.compare(password, hash, function (err, result) {
+      if (result) {
+        res.success = true;
+        resolve(res);
       } else {
-        reject(res)
+        reject(res);
       }
     });
-  })}
+  });
+};
 
 const resolvers = {
   Query: {
     authentificate: async (_: any, args: any) => {
       const user = await prisma.user.findUnique({
         where: {
-          email: args.email
-        }
-      })
+          email: args.email,
+        },
+      });
       if (!user) {
-        throw new Error('No user with that email')
+        throw new Error('No user with that email');
       }
-      const hash = user?.password || ''
+      const hash = user?.password || '';
 
-      return await comparePassword(args.password, hash, args.email)
-      
+      return await comparePassword(args.password, hash, args.email);
     },
     allUsers: () => {
       return prisma.user.findMany({
@@ -85,27 +83,46 @@ const resolvers = {
     changePassword: async (_: any, args: any) => {
       const user = await prisma.user.findUnique({
         where: {
-          email: args.email
-        }
-      })
+          email: args.email,
+        },
+      });
       if (!user) {
-        throw new Error('No user with that email')
+        throw new Error('No user with that email');
       }
-      const hash = user?.password || ''
-      const result: any  = await comparePassword(args.password, hash, args.email)
-      if(result.success) {
+      const hash = user?.password || '';
+      const result: any = await comparePassword(args.password, hash, args.email);
+      if (result.success) {
         await prisma.user.update({
           where: {
-            email: args.email
+            email: args.email,
           },
           data: {
-            password: args.newPassword
-          }
-        })
-        return "Password changed"
+            password: args.newPassword,
+          },
+        });
+        return 'Password changed';
       } else {
-        return "Wrong password"
+        return 'Wrong password';
       }
+    },
+    updateUser: async (__: any, args: any) => {
+      return await prisma.user.update({
+        where: {
+          id: args.id,
+        },
+        data: {
+          name: args.name,
+          lastname: args.lastname,
+          email: args.email,
+        },
+      });
+    },
+    deleteUser: (__: any, args: any) => {
+      return prisma.user.delete({
+        where: {
+          email: args.email,
+        },
+      });
     },
     createBusinessHasUsers: (__: any, args: any) => {
       return prisma.business_has_users.create({

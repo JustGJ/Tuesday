@@ -9,6 +9,6 @@ const schema = makeExecutableSchema({
   resolvers: { ...resolvers, ...scalarsResolvers },
 });
 const server = new ApolloServer({ schema });
-server.listen({ port: 4000 }, () => {
+server.listen({ port: 4001 }, () => {
   console.log('connected');
 });
