@@ -12,7 +12,6 @@ const schema = makeExecutableSchema({
 });
 const server = new ApolloServer({ schema,  csrfPrevention: true, context: async ({ req }) => {
   // Get the user token from the headers.
-  console.log("ici")
   const payload = decodedToken(req)
 
   let user; 
@@ -25,12 +24,11 @@ const server = new ApolloServer({ schema,  csrfPrevention: true, context: async 
     });
   } 
 
-  console.log(user)
   // Add the user to the context
   return { user };
   }
 });
 
-server.listen({ port: 4004 }, () => {
+server.listen({ port: 4000 }, () => {
   console.log('connected');
 });
