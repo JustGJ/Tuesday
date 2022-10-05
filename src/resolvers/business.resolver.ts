@@ -7,7 +7,11 @@ export default {
     allBusiness: () => {
       return prisma.business.findMany({
         include: {
-          users: true,
+          users: {
+            include: {
+              user: true,
+            },
+            },
           projects: true,
         },
       });
