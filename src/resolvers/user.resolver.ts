@@ -1,17 +1,24 @@
-import { prisma } from '../prismaclient';
-import '../../prisma/middleware/user.middleware';
-import bcrypt from 'bcrypt';
+import { prisma } from '../prismaclient'
+import '../../prisma/middleware/user.middleware'
+import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
 
-const comparePassword = (password: string, hash: string, email: string) => {
+const isAuthorized = (password: string, hash: string, email:string) => {
+
   return new Promise((resolve, reject) => {
     let res = {
       email: email,
       success: false,
-    };
-    bcrypt.compare(password, hash, function (err, result) {
-      if (result) {
-        res.success = true;
-        resolve(res);
+      token: ''
+    }
+
+    bcrypt.compare(password, hash, function(err, result) {
+
+      if(result) {
+        const token = jwt.sign({ email }, process.env.TOKEN as string, { expiresIn: '1h' });
+        res.token = token;
+        res.success = true
+        resolve(res)
       } else {
         reject(res);
       }
@@ -19,9 +26,9 @@ const comparePassword = (password: string, hash: string, email: string) => {
   });
 };
 
-const resolvers = {
+export const resolvers = {
   Query: {
-    authentificate: async (_: any, args: any) => {
+    authentificate: async (_: any, args: any, context: any) => {
       const user = await prisma.user.findUnique({
         where: {
           email: args.email,
@@ -32,7 +39,9 @@ const resolvers = {
       }
       const hash = user?.password || '';
 
-      return await comparePassword(args.password, hash, args.email);
+      const success = await isAuthorized(args.password, hash, args.email)
+      return success
+
     },
     allUsers: () => {
       return prisma.user.findMany({
@@ -58,7 +67,7 @@ const resolvers = {
         },
       });
     },
-    getUserBusinesses: (__: any, args: any) => {
+    getUserBusinesses: (__: any, args: any, context: any) => {
       return prisma.business_has_users.findMany({
         where: {
           userId: args.userId,
@@ -70,8 +79,17 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUser: (__: any, args: any) => {
-      return prisma.user.create({
+    createUser: async(__: any, args: any) => {
+      const oldUser = await prisma.user.findUnique({
+        where: {
+          email: args.email,
+        },
+      });
+      if (oldUser) {
+        throw new Error('This mail is already used');
+      }
+
+      const newUser = await prisma.user.create({
         data: {
           name: args.name,
           lastname: args.lastname,
@@ -79,6 +97,8 @@ const resolvers = {
           password: args.password,
         },
       });
+
+      return newUser
     },
     changePassword: async (_: any, args: any) => {
       const user = await prisma.user.findUnique({
@@ -89,9 +109,9 @@ const resolvers = {
       if (!user) {
         throw new Error('No user with that email');
       }
-      const hash = user?.password || '';
-      const result: any = await comparePassword(args.password, hash, args.email);
-      if (result.success) {
+      const hash = user?.password || ''
+      const result: any  = await isAuthorized(args.password, hash, args.email)
+      if(result.success) {
         await prisma.user.update({
           where: {
             email: args.email,

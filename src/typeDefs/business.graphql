@@ -7,7 +7,11 @@ type Query {
 
 type Mutation {
   createBusiness(name: String!): Business!
-  createBusinessHasUsers(userId: Int!, businessId: Int!, isAdmin: Boolean!): Business_has_users!
+  createBusinessHasUsers(
+    userId: Int!
+    businessId: Int!
+    isAdmin: Boolean!
+  ): Business_has_users!
 }
 
 type Business {

@@ -23,6 +23,7 @@ model User {
   lastname   String
   email      String               @unique
   password   String
+  token      String?
   projects   Project_has_users[]
   businesses Business_has_users[]
   tasks      User_has_tasks[]
@@ -90,10 +91,5 @@ model Comment {
 }
 
 // Faire la table statut
-// Faire les seeds
-// faire le middleware avec bcrypt pour le mdp
-// faire service spécifiques pour authentification / inscription
 // Faire les chemin avec typescript
-// Organiser tout ce merdier
-// faire le middleware/service pour le token
 // faire le middleware pour le mail
