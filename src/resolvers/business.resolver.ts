@@ -7,11 +7,7 @@ export default {
     allBusiness: () => {
       return prisma.business.findMany({
         include: {
-          users: {
-            include: {
-              user: true,
-            },
-            },
+          users: true,
           projects: true,
         },
       });
@@ -34,10 +30,10 @@ export default {
         },
       });
     },
-    getUserBusinesses: (__: any, args: any) => {
+    getUserBusinesses: (__: any, args: any, context: any) => {
       return prisma.business_has_users.findMany({
         where: {
-          userId: args.userId,
+          userId: context.user.id,
         },
         include: {
           business: true,
@@ -46,21 +42,28 @@ export default {
     },
   },
   Mutation: {
-    createBusiness: (__: any, args: any) => {
-      return prisma.business.create({
-        data: {
+    createBusiness: async (__: any, args: any, context: any) => {
+      const oldBusiness = await prisma.business.findUnique({
+        where: {
           name: args.name,
         },
       });
-    },
-    createBusinessHasUsers: (__: any, args: any) => {
-      return prisma.business_has_users.create({
+      if (oldBusiness) {
+        throw new Error('Business already exists'); 
+      }
+      const business: any = await prisma.business.create({
         data: {
-          userId: args.userId,
-          businessId: args.businessId,
-          isAdmin: args.isAdmin,
+          name: args.name,
+      }})
+
+      await prisma.business_has_users.create({
+        data: {
+          businessId: business.id,
+          userId: context.user.id,
+          isAdmin: true
         },
       });
-    },
-  },
-};
+
+      return business
+  }
+}}
