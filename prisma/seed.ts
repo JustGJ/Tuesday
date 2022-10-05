@@ -1,13 +1,13 @@
 // @ts-nocheck
-// import {PrismaClient} from '@prisma/client'
-// import  {faker}  from '@faker-js/faker';
-
- 
-// import { prisma } from '../src/prismaclient'; 
 import {PrismaClient} from '@prisma/client'
 import { users,businesses, relation_businesses ,projects, tasks } from './datas';
 const prisma = new PrismaClient();
 
+
+// Todo
+//------------------------------------------------------------------------------------//
+//command for generate seed npx prisma db push --force-reset && npx prisma db seed
+//-----------------------------------------------------------------------------------// 
 const load = async () => {
   try {
 
@@ -45,5 +45,3 @@ const load = async () => {
 };
 load();
 
-// Todo
-// npx prisma db push --force-reset && npx prisma db seed
