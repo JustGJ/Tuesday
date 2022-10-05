@@ -31,10 +31,10 @@ export default {
         },
       });
     },
-    getUserBusinesses: (__: any, args: any) => {
+    getUserBusinesses: (__: any, args: any, context: any) => {
       return prisma.business_has_users.findMany({
         where: {
-          userId: args.userId,
+          userId: context.user.id,
         },
         include: {
           business: true,
@@ -43,21 +43,29 @@ export default {
     },
   },
   Mutation: {
-    createBusiness: (__: any, args: any) => {
-      return prisma.business.create({
+    createBusiness: async (__: any, args: any, context: any) => {
+      const oldBusiness = await prisma.business.findUnique({
+        where: {
+          name: args.name,
+        },
+      });
+      if (oldBusiness) {
+        throw new Error('Business already exists');
+      }
+      const business: any = await prisma.business.create({
         data: {
           name: args.name,
         },
       });
-    },
-    createBusinessHasUsers: (__: any, args: any) => {
-      return prisma.business_has_users.create({
+
+      await prisma.business_has_users.create({
         data: {
-          userId: args.userId,
-          businessId: args.businessId,
-          isAdmin: args.isAdmin,
+          businessId: business.id,
+          userId: context.user.id,
+          isAdmin: true,
         },
       });
+      return business;
     },
     updateBusiness: async (__: any, args: any) => {
       return await prisma.business.update({

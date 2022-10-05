@@ -35,4 +35,5 @@ type User_has_tasks {
 type authentificateSuccess {
   email: String!
   success: Boolean!
+  token: String
 }
