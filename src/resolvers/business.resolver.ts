@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { isNamedType } from 'graphql';
 
 const prisma = new PrismaClient();
 
@@ -55,6 +56,23 @@ export default {
           userId: args.userId,
           businessId: args.businessId,
           isAdmin: args.isAdmin,
+        },
+      });
+    },
+    updateBusiness: async (__: any, args: any) => {
+      return await prisma.business.update({
+        where: {
+          id: args.id,
+        },
+        data: {
+          name: args.name,
+        },
+      });
+    },
+    deleteBusiness: (__: any, args: any) => {
+      return prisma.business.delete({
+        where: {
+          id: args.id,
         },
       });
     },

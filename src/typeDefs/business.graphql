@@ -8,6 +8,8 @@ type Query {
 type Mutation {
   createBusiness(name: String!): Business!
   createBusinessHasUsers(userId: Int!, businessId: Int!, isAdmin: Boolean!): Business_has_users!
+  updateBusiness(id: Int!, name: String!): Business
+  deleteBusiness(id: Int!): Business
 }
 
 type Business {
