@@ -1,0 +1,8 @@
+type Query {
+  forgottenPassword(email: String!): Success
+}
+
+type Success {
+  email: String!
+  success: Boolean!
+}

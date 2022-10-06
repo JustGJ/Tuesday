@@ -5,6 +5,7 @@ import resolvers from './resolvers';
 import { typeDefs as scalarsTypedefs, resolvers as scalarsResolvers } from 'graphql-scalars';
 import { decodedToken } from './decodedToken';
 import { prisma } from './prismaclient'
+import { main } from './forgottenPassword';
 
 const schema = makeExecutableSchema({
   typeDefs: [types, ...scalarsTypedefs],

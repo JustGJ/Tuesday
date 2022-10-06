@@ -121,7 +121,12 @@ export const resolvers = {
       } else {
       throw new Error('Invalid data');
       }
-      return newUser
+      return {
+        name: args.name,
+        lastname: args.lastname,
+        email: args.email,
+        success: true
+      }
       
     },
     changePassword: async (_: any, args: any, context: any) => {
