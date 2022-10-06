@@ -27,12 +27,11 @@ const server = new ApolloServer({
       });
     }
 
-    console.log(user);
     // Add the user to the context
     return { user };
   },
 });
 
-server.listen({ port: 4004 }, () => {
+server.listen({ port: 4000 }, () => {
   console.log('connected');
 });
