@@ -30,6 +30,7 @@ model User {
   comments   Comment[]
 }
 
+
 model Project {
   id         Int                 @id @default(autoincrement())
   name       String
@@ -62,7 +63,7 @@ model Project_has_users {
 model Task {
   id          Int              @id @default(autoincrement())
   name        String
-  status      String           @default("En cours")
+  status      Status           @default(INPROGRESS)         
   description String
   projectId   Int
   project     Project          @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -70,6 +71,11 @@ model Task {
   comments    Comment[]
 }
 
+enum Status {
+  TODO
+  INPROGRESS
+  DONE
+}
 model User_has_tasks {
   user           User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId         Int
