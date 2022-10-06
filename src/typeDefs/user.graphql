@@ -11,7 +11,8 @@ type Mutation {
     lastname: String!
     email: String!
     password: String!
-  ): User!
+  ): successRegisteredUser!
+
   createBusinessHasUsers(
     userId: Int!
     businessId: Int!
@@ -50,4 +51,11 @@ type authentificateSuccess {
   email: String!
   success: Boolean!
   token: String
+}
+
+type successRegisteredUser {
+  name: String!
+  lastname: String!
+  email: String!
+  success: Boolean!
 }
