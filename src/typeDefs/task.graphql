@@ -9,12 +9,19 @@ type Task {
   id: Int
   name: String!
   description: String
-  status: String
+  status: Status
   projectId: Int
   project: Project
   users: [User_has_tasks]
   comments: [Comment]
 }
+
+enum Status {
+  TODO
+  INPROGRESS
+  DONE
+}
+
 type Comment {
   id: Int
   content: String

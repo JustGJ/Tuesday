@@ -12,6 +12,7 @@ type Mutation {
     email: String!
     password: String!
   ): successRegisteredUser!
+
   createBusinessHasUsers(
     userId: Int!
     businessId: Int!
@@ -23,7 +24,8 @@ type Mutation {
     newPassword: String!
   ): String!
   deleteUser(email: String!): User
-  updateUser(id: Int!, email: String, name: String, lastname: String): User
+  updateUserName(name: String, lastname: String): User
+  updateUserMail(password: String, email: String): authentificateSuccess
 }
 type User {
   name: String

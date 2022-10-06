@@ -3,6 +3,8 @@ type Query {
 }
 type Mutation {
   createProject(name: String!, businessId: Int!): Project!
+  updateProject(id: Int!, name: String!): Project
+  deleteProject(id: Int!): Project
 }
 type Project {
   name: String

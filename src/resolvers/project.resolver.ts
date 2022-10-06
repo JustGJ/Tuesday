@@ -30,5 +30,22 @@ export default {
         },
       });
     },
+    updateProject: async (__: any, args: any) => {
+      return await prisma.project.update({
+        where: {
+          id: args.id,
+        },
+        data: {
+          name: args.name,
+        },
+      });
+    },
+    deleteProject: (__: any, args: any) => {
+      return prisma.project.delete({
+        where: {
+          id: args.id,
+        },
+      });
+    },
   },
 };

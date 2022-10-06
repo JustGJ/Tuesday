@@ -2,7 +2,7 @@ import { prisma } from '../prismaclient'
 import '../../prisma/middleware/user.middleware'
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
-import { schemaUser } from '../validationSchema/validation';
+import { schemaUser, schemaMail } from '../validationSchema/validation';
 
 const isAuthorized = (password: string, hash: string, email:string) => {
 
@@ -164,26 +164,54 @@ export const resolvers = {
         return 'Wrong password';
       }
     },
-    updateUser: async (__: any, args: any) => {
+    updateUserName: async (__: any, args: any, context: any) => {
       return await prisma.user.update({
         where: {
-          id: args.id,
+          id: context.user.id,
         },
         data: {
           name: args.name,
-          lastname: args.lastname,
-          email: args.email,
+          lastname: args.lastname,   
         },
       });
     },
-    deleteUser: (__: any, args: any) => {
-      return prisma.user.delete({
+    updateUserMail: async (__: any, args: any, context: any) => {
+      const isMailAlreadyUsed = await prisma.user.findUnique({
         where: {
           email: args.email,
         },
       });
+      if (isMailAlreadyUsed) {
+        throw new Error('This mail is already used');
+      }
+      
+      const result: any  = await isAuthorized(args.password, context.user.password, args.email)
+      const mailIsValid: any =  await schemaUser.isValid({
+        email: context.user.email,
+      })
+
+      if(result.success && mailIsValid) {
+        await prisma.user.update({
+          where: {
+          id: context.user.id,
+          },
+          data: {
+            email: args.email,
+          },
+        });
+        return result
+      } else {
+        throw new Error('An error occured, please verify your informations.');
+      }
     },
-    createBusinessHasUsers: (__: any, args: any) => {
+    deleteUser: (__: any, context: any) => {
+      return prisma.user.delete({
+        where: {
+          email: context.user.email,
+        },
+      });
+    },
+    createBusinessHasUsers: (__: any, args: any, context: any) => {
       return prisma.business_has_users.create({
         data: {
           userId: args.userId,

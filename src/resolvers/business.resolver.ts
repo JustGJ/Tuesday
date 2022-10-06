@@ -67,7 +67,19 @@ export default {
       });
       return business;
     },
-    updateBusiness: async (__: any, args: any) => {
+    updateBusiness: async (__: any, args: any, context: any) => {
+      const isAdmin = await prisma.business_has_users.findMany({
+        where: {
+          businessId: args.id,
+          userId: context.user.id,
+          isAdmin: true
+        }
+      })
+      
+      if(!isAdmin) {
+        throw new Error('You are not an admin of this business')
+      }
+
       return await prisma.business.update({
         where: {
           id: args.id,
@@ -77,7 +89,19 @@ export default {
         },
       });
     },
-    deleteBusiness: (__: any, args: any) => {
+    deleteBusiness: async(__: any, args: any, context: any) => {
+      const isAdmin = await prisma.business_has_users.findMany({
+        where: {
+          businessId: args.id,
+          userId: context.user.id,
+          isAdmin: true
+        }
+      })
+      
+      if(!isAdmin) {
+        throw new Error('You are not an admin of this business')
+      }
+
       return prisma.business.delete({
         where: {
           id: args.id,
