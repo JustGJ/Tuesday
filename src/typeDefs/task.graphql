@@ -1,9 +1,11 @@
-# type Query {
-#   allTasksFromProject(projectId: Int): [Task!]!
-#   allTasksFromUser(userId: Int): [Task!]!
-# }
+type Query {
+  allTasksFromProject(projectId: Int): [Task!]!
+  allTasksFromUser(userId: Int): [Task!]!
+}
 type Mutation {
   createTask(name: String!, description: String, status: String, projectId: Int!): Task!
+  updateTask(id: Int!, name: String, description: String, status: Status): Task
+  deleteTask(id: Int!): Task
 }
 type Task {
   id: Int
