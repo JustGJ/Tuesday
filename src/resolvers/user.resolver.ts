@@ -57,7 +57,7 @@ export const resolvers = {
     getSingleUser: (__: any, args: any) => {
       return prisma.user.findUnique({
         where: {
-          id: args.id,
+          email: args.email,
         },
         include: {
           businesses: {

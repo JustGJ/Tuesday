@@ -1,6 +1,6 @@
 type Query {
   allUsers: [User!]!
-  getSingleUser(id: Int!): User
+  getSingleUser(email: String!): User
   allBusinessHasUsers: [Business_has_users!]!
   getUserBusinesses(userId: Int!): [Business_has_users!]!
   authentificate(email: String!, password: String!): authentificateSuccess
